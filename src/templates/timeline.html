@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Famly Photos">
+    <meta name="theme-color" content="#0a0a0f">
+    <title>Journey – Famly Photos</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0f;
+            --surface: #16141f;
+            --surface-2: #1e1b2a;
+            --surface-3: #2a2639;
+            --border: rgba(139, 92, 246, .1);
+            --text: #f0ecf9;
+            --text-secondary: #9a90b0;
+            --text-tertiary: #6b6180;
+            --accent: #8b5cf6;
+            --accent-dim: #7c4dff;
+            --accent-soft: rgba(139, 92, 246, .12);
+            --green: #4ade80;
+            --radius: 8px;
+            --radius-sm: 4px;
+            --nav-height: 52px;
+            --transition-fast: .15s ease;
+            --transition-med: .25s ease;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: calc(var(--nav-height) + 20px) 16px 20px;
+        }
+
+        /* ── Header — frosted glass fixed bar ── */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            height: var(--nav-height);
+            background: rgba(22, 20, 31, .78);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            text-decoration: none;
+            color: var(--text);
+            letter-spacing: -0.01em;
+        }
+        .logo .material-icons-outlined {
+            font-size: 22px;
+            color: var(--accent);
+        }
+        nav {
+            display: flex;
+            gap: 2px;
+            background: rgba(139, 92, 246, .08);
+            border-radius: 8px;
+            padding: 3px;
+        }
+        nav a {
+            padding: 6px 14px;
+            border-radius: 6px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: .82rem;
+            font-weight: 500;
+            transition: all var(--transition-fast);
+        }
+        nav a:hover { color: var(--text); }
+        nav a.active {
+            background: var(--accent);
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(139, 92, 246, .3);
+        }
+
+        /* ── Filters ── */
+        .filters {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            padding-bottom: 4px;
+        }
+        .filters::-webkit-scrollbar { display: none; }
+        .filter-btn {
+            padding: 6px 14px;
+            border-radius: 100px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text-secondary);
+            font-size: .8rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all var(--transition-fast);
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .filter-btn:hover { border-color: rgba(139, 92, 246, .25); color: var(--text); }
+        .filter-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(139, 92, 246, .25);
+        }
+
+        /* ── Timeline entries ── */
+        .timeline-entry {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin-bottom: 14px;
+            overflow: hidden;
+            transition: border-color var(--transition-fast);
+        }
+        .timeline-entry:hover { border-color: rgba(139, 92, 246, .25); }
+        .entry-header {
+            padding: 14px 18px 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        .entry-header .source-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: var(--accent-soft);
+            color: var(--accent);
+            font-size: .7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+        .entry-header .date-author {
+            font-size: .78rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .entry-header .date-author .material-icons-outlined { font-size: 14px; }
+        .entry-header .author { font-weight: 500; color: var(--text); }
+        .entry-title {
+            padding: 0 18px 6px;
+            font-size: 1.02rem;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+        .entry-body {
+            padding: 0 18px 14px;
+            font-size: .88rem;
+            line-height: 1.65;
+            white-space: pre-wrap;
+            color: var(--text);
+        }
+
+        /* ── Media strip ── */
+        .entry-media {
+            display: flex;
+            gap: 2px;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        .entry-media::-webkit-scrollbar { display: none; }
+        .entry-media img, .entry-media video {
+            flex-shrink: 0;
+            scroll-snap-align: start;
+            max-height: 400px;
+            width: auto;
+            object-fit: cover;
+            cursor: pointer;
+            transition: opacity var(--transition-fast);
+        }
+        .entry-media video {
+            min-height: 200px;
+            min-width: 200px;
+            background: #000;
+        }
+        .entry-media img:hover, .entry-media video:hover { opacity: .85; }
+        .entry-media.single img, .entry-media.single video {
+            width: 100%;
+            max-height: 500px;
+            object-fit: cover;
+        }
+
+        .entry-video-link {
+            padding: 10px 18px;
+            font-size: .8rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .entry-video-link .material-icons-outlined { font-size: 18px; color: var(--accent); }
+        .entry-video-link a { color: var(--accent); text-decoration: none; }
+        .entry-video-link a:hover { text-decoration: underline; }
+
+        .empty-timeline {
+            text-align: center;
+            padding: 120px 20px;
+            color: var(--text-tertiary);
+        }
+        .empty-timeline .material-icons-outlined {
+            font-size: 48px;
+            color: var(--text-tertiary);
+            display: block;
+            margin-bottom: 12px;
+        }
+
+        /* ── Pagination ── */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            padding: 20px 0 40px;
+        }
+        .pagination a {
+            padding: 8px 18px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: .82rem;
+            font-weight: 500;
+            transition: all var(--transition-fast);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .pagination a .material-icons-outlined { font-size: 18px; }
+        .pagination a:hover { border-color: rgba(139, 92, 246, .25); color: var(--text); }
+        .pagination .disabled { opacity: .3; pointer-events: none; }
+
+        /* ── Lightbox ── */
+        .lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            background: rgba(10, 10, 15, .92);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity .3s ease;
+        }
+        .lightbox.open { display: flex; }
+        .lightbox.visible { opacity: 1; }
+        .lightbox-media {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            padding: 60px 80px;
+        }
+        .lightbox-media img, .lightbox-media video {
+            max-width: 100%;
+            max-height: calc(100vh - 120px);
+            border-radius: 6px;
+            object-fit: contain;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, .5);
+        }
+        .lightbox-media video { background: #000; }
+        .lb-btn {
+            position: fixed;
+            z-index: 1001;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(139, 92, 246, .15);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            color: rgba(255, 255, 255, .85);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background var(--transition-fast), transform var(--transition-fast);
+        }
+        .lb-btn:hover { background: rgba(139, 92, 246, .3); transform: scale(1.05); }
+        .lb-btn .material-icons-outlined { font-size: 20px; }
+        .lb-close { top: 16px; left: 16px; }
+        .lb-prev  { top: 50%; left: 16px; transform: translateY(-50%); }
+        .lb-next  { top: 50%; right: 16px; transform: translateY(-50%); }
+        .lb-prev:hover { transform: translateY(-50%) scale(1.05); }
+        .lb-next:hover { transform: translateY(-50%) scale(1.05); }
+        .lb-counter {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1001;
+            font-size: .78rem;
+            font-weight: 500;
+            color: rgba(255, 255, 255, .5);
+            background: rgba(10, 10, 15, .5);
+            backdrop-filter: blur(10px);
+            padding: 4px 12px;
+            border-radius: 12px;
+            pointer-events: none;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 600px) {
+            .container { padding: calc(var(--nav-height) + 12px) 10px 12px; }
+            nav a { padding: 5px 10px; font-size: .78rem; }
+            .entry-header { padding: 12px 14px 8px; }
+            .entry-title { padding: 0 14px 5px; font-size: .95rem; }
+            .entry-body { padding: 0 14px 12px; font-size: .85rem; }
+            .entry-video-link { padding: 8px 14px; }
+            .entry-media.single img, .entry-media.single video { max-height: 350px; }
+            .lightbox-media { padding: 16px; }
+            .lb-prev, .lb-next { display: none; }
+            .lb-close { top: 10px; left: 10px; }
+            .lb-counter { bottom: 12px; }
+        }
+        /* ── Pull-to-refresh ── */
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .ptr-indicator {
+            position: fixed;
+            top: var(--nav-height); left: 0; right: 0;
+            z-index: 99;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 48px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity .2s ease;
+        }
+        .ptr-indicator.pulling, .ptr-indicator.refreshing { opacity: 1; }
+        .ptr-spinner {
+            width: 24px; height: 24px;
+            border: 2.5px solid rgba(139, 92, 246, .2);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+        }
+        .ptr-indicator.refreshing .ptr-spinner {
+            animation: spin .7s linear infinite;
+        }
+        body.ptr-active {
+            transition: transform .3s cubic-bezier(.25, .1, .25, 1);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a class="logo" href="/">
+            <img src="/logo.png" alt="" width="32" height="32" style="border-radius:4px">
+            Famly Photos
+        </a>
+        <nav>
+            <a href="/">Photos</a>
+            <a href="/journey" class="active">Journey</a>
+            <a href="/dashboard">Dashboard</a>
+        </nav>
+    </header>
+    <div class="ptr-indicator" id="ptr-indicator"><div class="ptr-spinner"></div></div>
+
+    <div class="container">
+        <div class="filters"></div>
+
+        {% if entries %}
+            {% for entry in entries %}
+            <div class="timeline-entry">
+                <div class="entry-header">
+                    <div>
+                        <span class="source-tag">{{ entry.source }}</span>
+                        <span class="date-author">
+                            <span class="material-icons-outlined">calendar_today</span>
+                            {{ entry.created_at[:10] if entry.created_at else '' }}
+                            {% if entry.author %}
+                            &middot;
+                            <span class="material-icons-outlined">person</span>
+                            <span class="author">{{ entry.author }}</span>
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+
+                {% if entry.title %}
+                <div class="entry-title">{{ entry.title }}</div>
+                {% endif %}
+
+                {% if entry.body %}
+                <div class="entry-body">{{ entry.body }}</div>
+                {% endif %}
+
+                {% if entry.media_files %}
+                <div class="entry-media {% if entry.media_files | length == 1 %}single{% endif %}" data-media='{{ entry.media_files | tojson }}'>
+                    {% for file in entry.media_files %}
+                        {% set ext = file.split('.')[-1].lower() %}
+                        {% if ext in ['mp4','mov','webm','m4v'] %}
+                        <video src="/photos/{{ file }}" controls playsinline preload="metadata" onclick="event.stopPropagation()"></video>
+                        {% else %}
+                        <img src="/photos/{{ file }}" loading="lazy" alt="" onclick="openLightbox(this, {{ loop.index0 }})">
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                {% if entry.video_url and not entry.media_files %}
+                <div class="entry-video-link">
+                    <span class="material-icons-outlined">videocam</span>
+                    <a href="{{ entry.video_url }}" target="_blank">Watch video</a>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+
+            <div class="pagination">
+                <a href="/journey?page={{ page - 1 }}" class="{% if page <= 1 %}disabled{% endif %}">
+                    <span class="material-icons-outlined">arrow_back</span>
+                    Newer
+                </a>
+                <a href="/journey?page={{ page + 1 }}">
+                    Older
+                    <span class="material-icons-outlined">arrow_forward</span>
+                </a>
+            </div>
+        {% else %}
+            <div class="empty-timeline">
+                <span class="material-icons-outlined">notes</span>
+                <p>No content entries yet. Notes, observations, and messages will appear here after a fetch.</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox">
+        <button class="lb-btn lb-close" onclick="closeLightbox()">
+            <span class="material-icons-outlined">close</span>
+        </button>
+        <button class="lb-btn lb-prev" id="lb-prev" onclick="navLightbox(-1)">
+            <span class="material-icons-outlined">chevron_left</span>
+        </button>
+        <button class="lb-btn lb-next" id="lb-next" onclick="navLightbox(1)">
+            <span class="material-icons-outlined">chevron_right</span>
+        </button>
+        <div class="lb-counter" id="lb-counter"></div>
+        <div class="lightbox-media" id="lb-media"></div>
+    </div>
+
+    <script>
+        // ── Pull-to-refresh ──
+        (function() {
+            var PTR_THRESHOLD = 80, PTR_MAX = 140;
+            var indicator = document.getElementById('ptr-indicator');
+            if (!indicator) return;
+            var startY = 0, pulling = false, refreshing = false, currentDy = 0;
+            function isAtTop() { return window.scrollY <= 0; }
+            function isLightboxOpen() {
+                var lb = document.getElementById('lightbox');
+                return lb && lb.classList.contains('open');
+            }
+            function setTranslate(px) {
+                var t = 'translateY(' + px + 'px)';
+                document.body.style.transform = t;
+                indicator.style.transform = t;
+            }
+            document.addEventListener('touchstart', function(e) {
+                if (refreshing || !isAtTop() || isLightboxOpen() || e.touches.length !== 1) return;
+                startY = e.touches[0].clientY;
+                pulling = false;
+                currentDy = 0;
+                document.body.classList.remove('ptr-active');
+            }, { passive: true });
+            document.addEventListener('touchmove', function(e) {
+                if (refreshing || !isAtTop() || isLightboxOpen() || e.touches.length !== 1) return;
+                var dy = e.touches[0].clientY - startY;
+                if (dy < 0) { if (pulling) reset(); return; }
+                if (!pulling && dy < 10) return;
+                pulling = true;
+                currentDy = dy;
+                var pull = Math.min(dy * 0.45, PTR_MAX);
+                setTranslate(pull);
+                indicator.classList.add('pulling');
+                var spinner = indicator.querySelector('.ptr-spinner');
+                if (spinner) {
+                    var progress = Math.min(dy / PTR_THRESHOLD, 1);
+                    spinner.style.transform = 'rotate(' + (progress * 360) + 'deg)';
+                }
+                if (dy > 10 && isAtTop()) e.preventDefault();
+            }, { passive: false });
+            document.addEventListener('touchend', function() {
+                if (!pulling || refreshing) return;
+                if (currentDy >= PTR_THRESHOLD) {
+                    refreshing = true;
+                    document.body.classList.add('ptr-active');
+                    setTranslate(56);
+                    indicator.classList.remove('pulling');
+                    indicator.classList.add('refreshing');
+                    var spinner = indicator.querySelector('.ptr-spinner');
+                    if (spinner) spinner.style.transform = '';
+                    setTimeout(function() { location.reload(); }, 600);
+                } else {
+                    document.body.classList.add('ptr-active');
+                    reset();
+                }
+            }, { passive: true });
+            function reset() {
+                pulling = false;
+                currentDy = 0;
+                setTranslate(0);
+                indicator.classList.remove('pulling');
+                var spinner = indicator.querySelector('.ptr-spinner');
+                if (spinner) spinner.style.transform = '';
+                setTimeout(function() { document.body.classList.remove('ptr-active'); }, 300);
+            }
+        })();
+
+        const VIDEO_EXTS = ['mp4','mov','webm','m4v'];
+        let lbFiles = [];
+        let lbIdx = 0;
+        const lightboxEl = document.getElementById('lightbox');
+
+        function openLightbox(imgEl, idx) {
+            const mediaDiv = imgEl.closest('.entry-media');
+            lbFiles = JSON.parse(mediaDiv.dataset.media);
+            lbIdx = idx;
+            renderLightbox();
+            lightboxEl.classList.add('open');
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => lightboxEl.classList.add('visible'));
+            });
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            const vid = document.querySelector('#lb-media video');
+            if (vid) vid.pause();
+            lightboxEl.classList.remove('visible');
+            setTimeout(() => lightboxEl.classList.remove('open'), 300);
+            document.body.style.overflow = '';
+        }
+
+        function navLightbox(dir) {
+            const vid = document.querySelector('#lb-media video');
+            if (vid) vid.pause();
+            lbIdx = Math.max(0, Math.min(lbFiles.length - 1, lbIdx + dir));
+            renderLightbox();
+        }
+
+        function renderLightbox() {
+            const file = lbFiles[lbIdx];
+            const ext = file.split('.').pop().toLowerCase();
+            const mediaEl = document.getElementById('lb-media');
+            if (VIDEO_EXTS.includes(ext)) {
+                mediaEl.innerHTML = `<video src="/photos/${file}" controls playsinline preload="auto" autoplay></video>`;
+            } else {
+                mediaEl.innerHTML = `<img src="/photos/${file}" alt="">`;
+            }
+            const counter = document.getElementById('lb-counter');
+            if (lbFiles.length > 1) {
+                counter.textContent = `${lbIdx + 1} / ${lbFiles.length}`;
+                counter.style.display = '';
+            } else {
+                counter.style.display = 'none';
+            }
+            document.getElementById('lb-prev').style.display = lbFiles.length > 1 ? '' : 'none';
+            document.getElementById('lb-next').style.display = lbFiles.length > 1 ? '' : 'none';
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (!lightboxEl.classList.contains('open')) return;
+            if (e.key === 'Escape') closeLightbox();
+            if (e.key === 'ArrowLeft') navLightbox(-1);
+            if (e.key === 'ArrowRight') navLightbox(1);
+        });
+
+        // Touch swipe
+        let touchStartX = 0;
+        const lbMedia = document.getElementById('lb-media');
+        lbMedia.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+        lbMedia.addEventListener('touchend', (e) => {
+            const dx = e.changedTouches[0].screenX - touchStartX;
+            if (Math.abs(dx) > 60) {
+                if (dx > 0) navLightbox(-1);
+                else navLightbox(1);
+            }
+        }, { passive: true });
+
+        // Click outside media to close
+        lightboxEl.addEventListener('click', (e) => {
+            if (e.target === lightboxEl || e.target.id === 'lb-media') closeLightbox();
+        });
+    </script>
+</body>
+</html>

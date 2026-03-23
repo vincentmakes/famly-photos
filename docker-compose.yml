@@ -1,0 +1,22 @@
+version: "3.8"
+
+services:
+  famly-photos:
+    build: .
+    container_name: famly-photos
+    restart: unless-stopped
+    ports:
+      - "8811:8811"
+    env_file:
+      - .env
+    volumes:
+      # Persistent data (SQLite DB + cached token)
+      - ./data:/appdata/data
+      # Photo output → any host directory (local folder or network mount)
+      - ${HOST_PHOTOS_PATH}:/photos
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8811/health"]
+      interval: 60s
+      timeout: 10s
+      retries: 3

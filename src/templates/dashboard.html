@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Famly Photos">
+    <meta name="theme-color" content="#0a0a0f">
+    <title>Dashboard – Famly Photos</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0f;
+            --surface: #16141f;
+            --surface-2: #1e1b2a;
+            --surface-3: #2a2639;
+            --border: rgba(139, 92, 246, .1);
+            --text: #f0ecf9;
+            --text-secondary: #9a90b0;
+            --text-tertiary: #6b6180;
+            --accent: #8b5cf6;
+            --accent-dim: #7c4dff;
+            --accent-soft: rgba(139, 92, 246, .12);
+            --green: #4ade80;
+            --red: #f87171;
+            --amber: #fbbf24;
+            --radius: 8px;
+            --radius-sm: 4px;
+            --nav-height: 52px;
+            --transition-fast: .15s ease;
+            --transition-med: .25s ease;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: calc(var(--nav-height) + 20px) 16px 20px;
+        }
+
+        /* ── Header — frosted glass fixed bar ── */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            height: var(--nav-height);
+            background: rgba(22, 20, 31, .78);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            text-decoration: none;
+            color: var(--text);
+            letter-spacing: -0.01em;
+        }
+        .logo .material-icons-outlined {
+            font-size: 22px;
+            color: var(--accent);
+        }
+        nav {
+            display: flex;
+            gap: 2px;
+            background: rgba(139, 92, 246, .08);
+            border-radius: 8px;
+            padding: 3px;
+        }
+        nav a {
+            padding: 6px 14px;
+            border-radius: 6px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: .82rem;
+            font-weight: 500;
+            transition: all var(--transition-fast);
+        }
+        nav a:hover { color: var(--text); }
+        nav a.active {
+            background: var(--accent);
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(139, 92, 246, .3);
+        }
+
+        /* ── Action buttons ── */
+        .header-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            padding: 0 0 16px;
+        }
+        .btn {
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--surface);
+            color: var(--text);
+            font-size: .82rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+        .btn .material-icons-outlined { font-size: 18px; }
+        .btn:hover { background: var(--surface-2); border-color: rgba(139, 92, 246, .25); }
+        .btn:active { transform: scale(.97); }
+        .btn.primary {
+            background: var(--accent-dim);
+            border-color: var(--accent);
+            color: #fff;
+        }
+        .btn.primary:hover { background: var(--accent); }
+        .btn:disabled { opacity: .5; cursor: not-allowed; }
+
+        /* ── Stats grid ── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px 18px;
+            border-top: 2px solid var(--accent-dim);
+        }
+        .stat-card .label {
+            font-size: .7rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .stat-card .label .material-icons-outlined { font-size: 15px; color: var(--accent); }
+        .stat-card .value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+        .stat-card .sub {
+            font-size: .72rem;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        /* ── Badges ── */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 10px;
+            border-radius: 100px;
+            font-size: .7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .03em;
+        }
+        .badge .material-icons-outlined { font-size: 14px; }
+        .badge.success { background: rgba(74, 222, 128, .1); color: var(--green); }
+        .badge.failed { background: rgba(248, 113, 113, .1); color: var(--red); }
+        .badge.running { background: var(--accent-soft); color: var(--accent); }
+        .badge.interrupted { background: rgba(251, 191, 36, .1); color: var(--amber); }
+
+        .source-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+        .source-pill {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: .68rem;
+            font-weight: 600;
+            background: var(--accent-soft);
+            color: var(--accent);
+        }
+
+        /* ── Panel / table ── */
+        .panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .panel-header {
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--border);
+            font-weight: 600;
+            font-size: .88rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .panel-header .material-icons-outlined { font-size: 18px; color: var(--accent); }
+        .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        table { width: 100%; border-collapse: collapse; font-size: .82rem; }
+        th {
+            text-align: left;
+            padding: 10px 18px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: .7rem;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+        }
+        td {
+            padding: 10px 18px;
+            border-bottom: 1px solid var(--border);
+            font-variant-numeric: tabular-nums;
+            white-space: nowrap;
+        }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: rgba(139, 92, 246, .03); }
+        .empty { padding: 32px 18px; text-align: center; color: var(--text-secondary); font-size: .88rem; }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+        .live-dot.on { background: var(--green); box-shadow: 0 0 8px var(--green); animation: pulse 2s infinite; }
+        .live-dot.off { background: var(--text-tertiary); }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .4; } }
+
+        .meta-row {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            padding: 12px 18px;
+            font-size: .78rem;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--border);
+        }
+        .meta-row span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .meta-row .material-icons-outlined { font-size: 15px; color: var(--accent); }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            header { padding: 0 14px; }
+            .header-actions { width: 100%; }
+            .header-actions .btn { flex: 1; justify-content: center; }
+        }
+        @media (max-width: 600px) {
+            .container { padding: calc(var(--nav-height) + 12px) 10px 12px; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+            .stat-card { padding: 12px 12px; }
+            .stat-card .value { font-size: 1.3rem; }
+            th, td { padding: 8px 12px; font-size: .78rem; }
+            nav a { padding: 5px 10px; font-size: .78rem; }
+            .meta-row { gap: 12px; padding: 10px 14px; }
+        }
+        /* ── Pull-to-refresh ── */
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .ptr-indicator {
+            position: fixed;
+            top: var(--nav-height); left: 0; right: 0;
+            z-index: 99;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 48px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity .2s ease;
+        }
+        .ptr-indicator.pulling, .ptr-indicator.refreshing { opacity: 1; }
+        .ptr-spinner {
+            width: 24px; height: 24px;
+            border: 2.5px solid rgba(139, 92, 246, .2);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+        }
+        .ptr-indicator.refreshing .ptr-spinner {
+            animation: spin .7s linear infinite;
+        }
+        body.ptr-active {
+            transition: transform .3s cubic-bezier(.25, .1, .25, 1);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a class="logo" href="/">
+            <img src="/logo.png" alt="" width="32" height="32" style="border-radius:4px">
+            Famly Photos
+        </a>
+        <nav>
+            <a href="/">Photos</a>
+            <a href="/journey">Journey</a>
+            <a href="/dashboard" class="active">Dashboard</a>
+        </nav>
+    </header>
+    <div class="ptr-indicator" id="ptr-indicator"><div class="ptr-spinner"></div></div>
+
+    <div class="container">
+        <div class="header-actions">
+            <button class="btn" onclick="rescanDir()" id="btn-rescan">
+                <span class="material-icons-outlined">find_in_page</span>
+                Rescan
+            </button>
+            <button class="btn" onclick="refreshToken()" id="btn-token">
+                <span class="material-icons-outlined">key</span>
+                Refresh Token
+            </button>
+            <button class="btn primary" onclick="fetchNow()" id="btn-fetch" {% if is_running %}disabled{% endif %}>
+                <span class="material-icons-outlined">cloud_download</span>
+                {% if is_running %}Fetching...{% else %}Fetch Now{% endif %}
+            </button>
+            <button class="btn" onclick="purgeAll()" id="btn-purge" style="border-color:var(--red);color:var(--red)">
+                <span class="material-icons-outlined">delete_forever</span>
+                Purge &amp; Redownload
+            </button>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="label">
+                    <span class="material-icons-outlined">photo_library</span>
+                    Photos
+                </div>
+                <div class="value">{{ stats.total_photos }}</div>
+                <div class="sub">{{ stats.disk_usage_mb }} MB on disk</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">
+                    <span class="material-icons-outlined">videocam</span>
+                    Videos
+                </div>
+                <div class="value">{{ stats.total_videos }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">
+                    <span class="material-icons-outlined">article</span>
+                    Content Entries
+                </div>
+                <div class="value">{{ stats.total_entries }}</div>
+                <div class="sub source-pills">
+                    {% for src, cnt in stats.entries_by_source.items() %}
+                    <span class="source-pill">{{ src }} {{ cnt }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="label">
+                    <span class="material-icons-outlined">check_circle</span>
+                    Runs OK / Fail
+                </div>
+                <div class="value">
+                    <span style="color:var(--green)">{{ stats.successful_runs }}</span>
+                    /
+                    <span style="color:{% if stats.failed_runs > 0 %}var(--red){% else %}var(--text-secondary){% endif %}">{{ stats.failed_runs }}</span>
+                </div>
+                <div class="sub">of {{ stats.total_runs }} total</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">
+                    <span class="material-icons-outlined">vpn_key</span>
+                    Token Age
+                </div>
+                <div class="value" style="color:{% if token_age_hours > 120 %}var(--amber){% else %}var(--text){% endif %}">
+                    {% if token_age_hours < 0 %}&mdash;{% elif token_age_hours < 1 %}&lt;1h{% else %}{{ token_age_hours }}h{% endif %}
+                </div>
+                <div class="sub">child: {{ child_id }}</div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-header">
+                <span class="material-icons-outlined">history</span>
+                <span class="live-dot {% if is_running %}on{% else %}off{% endif %}"></span>
+                Job History
+            </div>
+            {% if recent_runs %}
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Run</th><th>Started</th><th>Status</th><th>DL</th><th>Skip</th></tr></thead>
+                    <tbody>
+                        {% for run in recent_runs %}
+                        <tr>
+                            <td>#{{ run.id }}</td>
+                            <td>{{ run.started_at }}</td>
+                            <td>
+                                <span class="badge {{ run.status }}">
+                                    {% if run.status == 'success' %}
+                                    <span class="material-icons-outlined">check</span>
+                                    {% elif run.status == 'failed' %}
+                                    <span class="material-icons-outlined">error_outline</span>
+                                    {% elif run.status == 'interrupted' %}
+                                    <span class="material-icons-outlined">warning</span>
+                                    {% else %}
+                                    <span class="material-icons-outlined">sync</span>
+                                    {% endif %}
+                                    {{ run.status }}
+                                </span>
+                            </td>
+                            <td>{{ run.photos_downloaded }}</td>
+                            <td>{{ run.photos_skipped }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty">No runs yet &mdash; the first fetch is starting now.</div>
+            {% endif %}
+            <div class="meta-row">
+                <span>
+                    <span class="material-icons-outlined">schedule</span>
+                    Next: {{ next_run_time }}
+                </span>
+                <span>
+                    <span class="material-icons-outlined">sync</span>
+                    Every {{ fetch_interval }}h
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ── Pull-to-refresh ──
+        (function() {
+            var PTR_THRESHOLD = 80, PTR_MAX = 140;
+            var indicator = document.getElementById('ptr-indicator');
+            if (!indicator) return;
+            var startY = 0, pulling = false, refreshing = false, currentDy = 0;
+            function isAtTop() { return window.scrollY <= 0; }
+            function isLightboxOpen() {
+                var lb = document.getElementById('lightbox');
+                return lb && lb.classList.contains('open');
+            }
+            function setTranslate(px) {
+                var t = 'translateY(' + px + 'px)';
+                document.body.style.transform = t;
+                indicator.style.transform = t;
+            }
+            document.addEventListener('touchstart', function(e) {
+                if (refreshing || !isAtTop() || isLightboxOpen() || e.touches.length !== 1) return;
+                startY = e.touches[0].clientY;
+                pulling = false;
+                currentDy = 0;
+                document.body.classList.remove('ptr-active');
+            }, { passive: true });
+            document.addEventListener('touchmove', function(e) {
+                if (refreshing || !isAtTop() || isLightboxOpen() || e.touches.length !== 1) return;
+                var dy = e.touches[0].clientY - startY;
+                if (dy < 0) { if (pulling) reset(); return; }
+                if (!pulling && dy < 10) return;
+                pulling = true;
+                currentDy = dy;
+                // Rubber-band: diminishing returns
+                var pull = Math.min(dy * 0.45, PTR_MAX);
+                setTranslate(pull);
+                indicator.classList.add('pulling');
+                var spinner = indicator.querySelector('.ptr-spinner');
+                if (spinner) {
+                    var progress = Math.min(dy / PTR_THRESHOLD, 1);
+                    spinner.style.transform = 'rotate(' + (progress * 360) + 'deg)';
+                }
+                if (dy > 10 && isAtTop()) e.preventDefault();
+            }, { passive: false });
+            document.addEventListener('touchend', function() {
+                if (!pulling || refreshing) return;
+                if (currentDy >= PTR_THRESHOLD) {
+                    refreshing = true;
+                    document.body.classList.add('ptr-active');
+                    setTranslate(56);
+                    indicator.classList.remove('pulling');
+                    indicator.classList.add('refreshing');
+                    var spinner = indicator.querySelector('.ptr-spinner');
+                    if (spinner) spinner.style.transform = '';
+                    setTimeout(function() { location.reload(); }, 600);
+                } else {
+                    document.body.classList.add('ptr-active');
+                    reset();
+                }
+            }, { passive: true });
+            function reset() {
+                pulling = false;
+                currentDy = 0;
+                setTranslate(0);
+                indicator.classList.remove('pulling');
+                var spinner = indicator.querySelector('.ptr-spinner');
+                if (spinner) spinner.style.transform = '';
+                setTimeout(function() { document.body.classList.remove('ptr-active'); }, 300);
+            }
+        })();
+
+        async function fetchNow() {
+            const b = document.getElementById('btn-fetch');
+            b.disabled = true;
+            b.innerHTML = '<span class="material-icons-outlined">cloud_download</span> Fetching...';
+            try {
+                const r = await fetch('/api/fetch-now', { method: 'POST' });
+                const d = await r.json();
+                if (d.status === 'already_running') alert('Already running.');
+                else setTimeout(() => location.reload(), 2000);
+            } catch (e) {
+                alert('Error: ' + e.message);
+                b.disabled = false;
+                b.innerHTML = '<span class="material-icons-outlined">cloud_download</span> Fetch Now';
+            }
+        }
+
+        async function refreshToken() {
+            const b = document.getElementById('btn-token');
+            b.disabled = true;
+            b.innerHTML = '<span class="material-icons-outlined">key</span> Refreshing...';
+            try {
+                const r = await fetch('/api/refresh-token', { method: 'POST' });
+                const d = await r.json();
+                if (d.status === 'ok') location.reload();
+                else alert('Failed: ' + (d.detail || 'unknown'));
+            } catch (e) {
+                alert('Error: ' + e.message);
+            } finally {
+                b.disabled = false;
+                b.innerHTML = '<span class="material-icons-outlined">key</span> Refresh Token';
+            }
+        }
+
+        async function rescanDir() {
+            const b = document.getElementById('btn-rescan');
+            b.disabled = true;
+            b.innerHTML = '<span class="material-icons-outlined">find_in_page</span> Scanning...';
+            try {
+                const r = await fetch('/api/rescan', { method: 'POST' });
+                const d = await r.json();
+                alert('Indexed ' + d.indexed + ' new photos from disk');
+                location.reload();
+            } catch (e) {
+                alert('Error: ' + e.message);
+            } finally {
+                b.disabled = false;
+                b.innerHTML = '<span class="material-icons-outlined">find_in_page</span> Rescan';
+            }
+        }
+
+        async function purgeAll() {
+            if (!confirm('This will DELETE all photos, videos, and database entries, then redownload everything from Famly.\n\nAre you sure?')) return;
+            const pw = prompt('Enter admin password:');
+            if (pw === null) return;
+            const b = document.getElementById('btn-purge');
+            b.disabled = true;
+            b.innerHTML = '<span class="material-icons-outlined">delete_forever</span> Purging...';
+            try {
+                const r = await fetch('/api/purge-all?password=' + encodeURIComponent(pw), { method: 'POST' });
+                const d = await r.json();
+                if (r.status === 403) {
+                    alert('Wrong password.');
+                } else if (d.status === 'fetch_running') {
+                    alert('A fetch is currently running. Try again later.');
+                } else {
+                    let msg = 'Purged ' + d.deleted_entries + ' entries, ' + d.deleted_files + ' files deleted.';
+                    if (d.moved_legacy > 0) msg += '\n' + d.moved_legacy + ' legacy photos moved to _legacy/ folder.';
+                    msg += '\nFresh fetch triggered.';
+                    alert(msg);
+                    setTimeout(() => location.reload(), 3000);
+                }
+            } catch (e) {
+                alert('Error: ' + e.message);
+            } finally {
+                b.disabled = false;
+                b.innerHTML = '<span class="material-icons-outlined">delete_forever</span> Purge & Redownload';
+            }
+        }
+
+        // Auto-reload every 30s
+        setTimeout(() => location.reload(), 30000);
+    </script>
+</body>
+</html>
