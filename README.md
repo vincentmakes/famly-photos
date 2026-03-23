@@ -1,8 +1,7 @@
 
 
 ## Famly Photos   
-
-<img width="100" height="100" alt="famly-photos" src="https://github.com/user-attachments/assets/c8033ced-8c97-419d-aaf2-3dd013908960" />  
+<img width="100" height="100" alt="famly-photos" src="https://github.com/user-attachments/assets/8572b1b9-4437-4845-9ae2-3651b856f603" />  
 
 A self-hosted Docker app that automatically saves your child's photos, videos, and Learning Journey content from [Famly](https://famly.co) to your own storage.
 
@@ -22,8 +21,8 @@ All content is deduplicated across runs, so you can safely restart or re-run wit
 
 > The backend also supports fetching feed items, notes, and messages (`FETCH_FEED`, `FETCH_NOTES`, `FETCH_MESSAGES` env vars), but there is no UI for browsing those yet. They are disabled by default.
 
-<img width="250"  alt="Screenshot 2026-03-21 at 16 37 39" src="https://github.com/user-attachments/assets/8b5cbf6a-d6be-400b-b751-ebc14143ddf3" />
-<img width="250"  alt="Screenshot 2026-03-21 at 16 37 50" src="https://github.com/user-attachments/assets/d4dae2ca-e98e-4417-91dc-53343a7298c9" />  
+<img width="250" height="689" alt="Screenshot 2026-03-21 at 16 37 50" src="https://github.com/user-attachments/assets/8b4dd726-79b4-4d59-a6cb-de4a59d7064e" />
+<img width="250" height="688" alt="Screenshot 2026-03-21 at 16 37 39" src="https://github.com/user-attachments/assets/7e3e1f9f-a81c-4ef9-9ecc-e758a304bb66" />  
 
 ## Features
 
