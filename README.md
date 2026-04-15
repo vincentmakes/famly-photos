@@ -139,6 +139,7 @@ Each instance gets its own gallery and dashboard at its own port (e.g. `:8811` f
 | `FAMLY_PASSWORD` | *(required)* | Famly parent account password |
 | `FAMLY_CHILD_ID` | *(required)* | Child UUID (see [Finding your child ID](#finding-your-child-id)) |
 | `FAMLY_ACCESS_TOKEN` | | Static token (skips login — see [2FA accounts](#2fa-accounts)) |
+| `FAMLY_BASE_URL` | `https://app.famly.co` | Backend base URL. Override to use a Famly-backed portal like Bright Horizons (`https://familyapp.brighthorizons.co.uk`). See [Alternative backends](#alternative-backends-bright-horizons-etc) |
 | `HOST_PHOTOS_PATH` | *(required)* | Host path where photos are saved |
 | `FETCH_INTERVAL_HOURS` | `6` | Hours between auto-fetches |
 | `FETCH_TAGGED` | `true` | Fetch tagged photos |
@@ -146,6 +147,18 @@ Each instance gets its own gallery and dashboard at its own port (e.g. `:8811` f
 | `APP_PORT` | `8811` | Server port |
 | `LOG_LEVEL` | `INFO` | Python logging level |
 | `ADMIN_PASSWORD` | | Password for purge-all endpoint (empty = no protection) |
+
+## Alternative backends (Bright Horizons, etc.)
+
+This app talks to [Famly](https://famly.co) by default, but other childcare portals are powered by the same Famly backend and expose the same API under a different hostname. You can point the app at any of them by setting `FAMLY_BASE_URL` in your `.env`.
+
+Known compatible portal:
+
+- **Bright Horizons (UK)** — `FAMLY_BASE_URL=https://familyapp.brighthorizons.co.uk`
+
+All other configuration (email, password, child ID) still works the same way — use the credentials for whatever portal you're logging in to.
+
+**Caveat:** Some alternative portals have slightly different authentication flows. In particular, the `ChooseContext` / 2FA step on Bright Horizons is known to differ from stock Famly and may fail the automatic email-and-password login. If you hit this, fall back to setting `FAMLY_ACCESS_TOKEN` manually (see [2FA accounts](#2fa-accounts)).
 
 ## Storage Layout
 
@@ -200,11 +213,11 @@ Other security notes:
 
 - **Credentials**: your Famly email/password are stored in the `.env` file and the access token is cached in plaintext at `/appdata/data/token.json`. Protect these files with appropriate filesystem permissions.
 - **`ADMIN_PASSWORD`**: the purge-all endpoint can optionally require a password, but all other API endpoints (fetch, rescan, upload, cleanup) are unprotected.
-- **Container isolation**: the app runs as a single container and only communicates outbound to `app.famly.co`. No inbound connections are needed except the web UI port.
+- **Container isolation**: the app runs as a single container and only communicates outbound to the configured Famly backend (default `app.famly.co`). No inbound connections are needed except the web UI port.
 
 ## Notes
 
-- **Privacy**: all data stays on your machine. The container only communicates with `app.famly.co`.
+- **Privacy**: all data stays on your machine. The container only communicates with the configured Famly backend (default `app.famly.co`).
 - **Multi-context accounts**: if your Famly account has access to multiple nurseries, the app automatically selects the first one during login.
 - **Deduplication**: all content is deduplicated across runs — tagged photos by filename, journey/notes by a hash of content fields, feed/messages by their API IDs.
 - **Famly API**: this app uses Famly's internal API (the same one their web app uses). It's not an official public API, so it could change. Tagged photos have been stable for years; the GraphQL endpoints for journey/notes are newer.

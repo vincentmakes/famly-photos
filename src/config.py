@@ -24,6 +24,10 @@ class Settings(BaseSettings):
     # Optional: override installation ID (usually stable)
     famly_installation_id: str = str(uuid.uuid4())
 
+    # Backend base URL — override to point at a different Famly-backed portal
+    # e.g. https://familyapp.brighthorizons.co.uk for Bright Horizons
+    famly_base_url: str = "https://app.famly.co"
+
     # Paths
     photo_dir: str = "/photos"
 

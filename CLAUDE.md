@@ -151,6 +151,7 @@ curl -X POST "http://localhost:8811/api/upload" -F "files=@photo.jpg"
 | `FAMLY_CHILD_ID` | (required) | Child UUID |
 | `FAMLY_ACCESS_TOKEN` | | Static token (skips email/password login, for 2FA accounts) |
 | `FAMLY_INSTALLATION_ID` | *(auto-generated)* | Installation UUID (usually stable) |
+| `FAMLY_BASE_URL` | `https://app.famly.co` | Backend base URL. Override for Famly-backed portals like Bright Horizons (`https://familyapp.brighthorizons.co.uk`). GraphQL endpoint is derived as `{base}/graphql` |
 | `HOST_PHOTOS_PATH` | | Host path for docker-compose volume mount |
 | `PHOTO_DIR` | `/photos` | Container path for photos |
 | `FETCH_INTERVAL_HOURS` | `6` | Hours between auto-fetches |

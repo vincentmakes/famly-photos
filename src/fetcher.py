@@ -17,11 +17,12 @@ except ImportError:
     _HAS_PIL = False
 
 from auth import FamlyAuth
+from config import settings
 from db import Database
 
 logger = logging.getLogger("famly.fetcher")
 
-BASE = "https://app.famly.co"
+BASE = settings.famly_base_url.rstrip("/")
 
 
 def _exif_date(filepath: Path) -> str:
