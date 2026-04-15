@@ -12,9 +12,11 @@ from pathlib import Path
 
 import requests
 
+from config import settings
+
 logger = logging.getLogger("famly.auth")
 
-GRAPHQL_URL = "https://app.famly.co/graphql"
+GRAPHQL_URL = f"{settings.famly_base_url.rstrip('/')}/graphql"
 
 AUTHENTICATE_MUTATION = """
 mutation Authenticate($email: EmailAddress!, $password: Password!, $deviceId: DeviceId, $legacy: Boolean) {
