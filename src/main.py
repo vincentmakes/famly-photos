@@ -153,9 +153,9 @@ async def gallery(request: Request) -> HTMLResponse:
     items_dicts = [asdict(it) for it in items]
 
     return templates.TemplateResponse(
+        request,
         "gallery.html",
         {
-            "request": request,
             "items": items_dicts,
             "total": total,
             "has_more": total > batch_size,
@@ -191,9 +191,9 @@ async def journey(
     entries = db.content_entries_with_media(source="journey", limit=per_page, offset=offset)
 
     return templates.TemplateResponse(
+        request,
         "timeline.html",
         {
-            "request": request,
             "entries": entries,
             "page": page,
         },
@@ -221,9 +221,9 @@ async def dashboard(request: Request) -> HTMLResponse:
     )
 
     return templates.TemplateResponse(
+        request,
         "dashboard.html",
         {
-            "request": request,
             "stats": stats,
             "recent_runs": recent_runs,
             "recent_photos": recent_photos,
